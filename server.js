@@ -2,6 +2,17 @@ const express = require('express');
 const app = express();
 const path = require('path');
 const fs = require('fs');
+const puppeteer = require('puppeteer');
+
+// Add at the top of your server.js
+process.on('unhandledRejection', (reason, promise) => {
+    console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+});
+
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).send('Something broke!');
+});
 
 // Load history from JSON file
 function loadHistory() {
@@ -19,6 +30,7 @@ const bot = require('./bot');
 
 // Middleware
 app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 app.set('view engine', 'ejs');
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -117,3 +129,63 @@ app.get('/history.csv', (req, res) => {
 // Start Server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running at http://localhost:${PORT}`));
+
+app.post('/start', async (req, res) => {
+    try {
+        const url = req.body.url;
+        if (!url) {
+            return res.status(400).json({ error: 'URL is required' });
+        }
+
+        // Update history before processing
+        const history = loadHistory();
+        const today = new Date().toISOString().split('T')[0];
+        if (!history[today]) {
+            history[today] = [];
+        }
+        
+        const entry = {
+            url: url,
+            visitedAt: new Date().toISOString(),
+            status: 'Processing'
+        };
+        
+        history[today].push(entry);
+        fs.writeFileSync(path.join(__dirname, 'history.json'), JSON.stringify(history, null, 2));
+
+        const browser = await puppeteer.launch({
+            args: [
+                '--no-sandbox',
+                '--disable-setuid-sandbox',
+                '--disable-dev-shm-usage',
+                '--disable-gpu',
+                '--window-size=1920,1080'
+            ],
+            headless: 'new',
+            executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || null
+        });
+
+        const page = await browser.newPage();
+        console.log('Navigating to:', url);
+        
+        await page.goto(url, {
+            waitUntil: 'networkidle0',
+            timeout: 60000
+        });
+
+        // Update history after successful processing
+        entry.status = 'Completed';
+        fs.writeFileSync(path.join(__dirname, 'history.json'), JSON.stringify(history, null, 2));
+        
+        await browser.close();
+        res.json({ success: true, message: 'Processing completed' });
+    } catch (error) {
+        console.error('Error:', error);
+        // Update history with error status
+        if (entry) {
+            entry.status = 'Failed';
+            fs.writeFileSync(path.join(__dirname, 'history.json'), JSON.stringify(history, null, 2));
+        }
+        res.status(500).json({ error: error.message });
+    }
+});

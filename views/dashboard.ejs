@@ -103,6 +103,33 @@
       color: #666;
       font-size: 0.9rem;
     }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      background: #111;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    h2 {
+      color: #0f0;
+      font-size: 2rem;
+      margin-top: 0;
+    }
+
+    .alert {
+      padding: 10px;
+      margin-top: 10px;
+      background: #222;
+      color: #0f0;
+      border-left: 4px solid #0f0;
+    }
+
+    .date-group {
+      margin-bottom: 20px;
+    }
   </style>
 </head>
 <body>
@@ -164,5 +191,34 @@
     <!-- Footer -->
     <div class="footer">© Sudhanshu Singh BOT | All rights reserved.</div>
   </div>
+
+  <script>
+    async function handleSubmit(event) {
+        event.preventDefault();
+        const form = event.target;
+        const url = form.url.value;
+        
+        try {
+            const response = await fetch('/start', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ url })
+            });
+            
+            const data = await response.json();
+            if (!response.ok) {
+                throw new Error(data.error || 'Something went wrong');
+            }
+            
+            alert('Process completed successfully!');
+            location.reload(); // Refresh to show updated history
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Error: ' + error.message);
+        }
+    }
+  </script>
 </body>
 </html>
