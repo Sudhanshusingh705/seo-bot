@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>SEO Hacker Toolkit</title>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Lora', serif;
+      background-color: #000;
+      color: #0f0;
+      margin: 0;
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 30px;
+    }
+
+    .tool-card {
+      background: #111;
+      padding: 20px;
+      margin-bottom: 30px;
+      border-left: 4px solid #0f0;
+    }
+
+    label {
+      display: block;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+
+    input[type="text"],
+    textarea {
+      width: 100%;
+      max-width: 600px;
+      padding: 10px;
+      margin-top: 5px;
+      border: 2px solid #fff;
+      background: #222;
+      color: #0f0;
+      font-size: 1rem;
+      font-family: 'Lora', serif;
+    }
+
+    button,
+    .styled-button {
+      margin-top: 15px;
+      padding: 10px 20px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      background: linear-gradient(135deg, #ff0000, #00ff00);
+      color: #000;
+      border: 2px solid #fff;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+    }
+
+    button:hover,
+    .styled-button:hover {
+      background: linear-gradient(135deg, #00ff00, #ff0000);
+    }
+
+    .output {
+      margin-top: 20px;
+      background: #111;
+      padding: 15px;
+      border-left: 3px solid #0f0;
+    }
+
+    a {
+      display: inline-block;
+      margin-top: 30px;
+      color: #0f0;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <h1>🔍 SEO Hacker Toolkit</h1>
+
+  <!-- Keyword Research -->
+  <div class="tool-card">
+    <h2>🔑 Keyword Research</h2>
+    <form action="/suggest-keywords" method="POST">
+      <label for="keyword">Enter a keyword:</label>
+      <input type="text" id="keyword" name="keyword" placeholder="e.g., education, colleges" required />
+      <button type="submit">🚀 Get Suggestions</button>
+    </form>
+  </div>
+
+  <!-- Meta Tag Generator -->
+  <div class="tool-card">
+    <h2>🧾 Meta Title & Description Generator</h2>
+    <form action="/generate-meta" method="POST">
+      <label for="content">Paste your article/content:</label>
+      <textarea id="content" name="content" rows="5" placeholder="Your content goes here..."></textarea>
+      <button type="submit">🛠️ Generate Meta Tags</button>
+    </form>
+  </div>
+
+  <!-- Output Area -->
+  <% if (typeof result !== "undefined") { %>
+    <div class="output"><%= result %></div>
+  <% } %>
+
+  <a href="/" class="styled-button">⬅️ Back to Dashboard</a>
+</body>
+</html>
