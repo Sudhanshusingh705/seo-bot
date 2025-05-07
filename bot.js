@@ -63,8 +63,12 @@ exports.runAutomation = async (links) => {
   for (let url of links) {
     try {
       const page = await browser.newPage();
+
+      // Set viewport
       await page.setViewport({ width: 1366, height: 768 });
       await page.goto(url, { waitUntil: 'networkidle2' });
+
+      // Human-like behavior
       await sleep(getRandomInt(2000, 4000));
       await autoScroll(page);
       await sleep(getRandomInt(5000, 12000));
@@ -75,6 +79,8 @@ exports.runAutomation = async (links) => {
         visitedAt: new Date().toISOString(),
         status: 'success'
       });
+
+      console.log(`Visited: ${url}`);
 
       await page.close();
     } catch (err) {
